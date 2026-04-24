@@ -1,0 +1,1068 @@
+
+<!-- saved from url=(0178)file:///C:/Users/Jaf/Desktop/CS50's%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#anexo-b-soluci%C3%B3n-de-problemas -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><h1 id="laboratorio-de-túneles-ssh">Laboratorio de Túneles SSH</h1>
+<h2 id="prácticas-guiadas---entorno-educativo">Prácticas Guiadas -
+Entorno Educativo</h2>
+<p><strong>Versión:</strong> 1.0<br>
+<strong>Duración estimada:</strong> 4-6 horas<br>
+<strong>Nivel:</strong> Intermedio<br>
+<strong>Entorno:</strong> 10 máquinas Kali + 1 servidor Ubuntu
+compartido</p>
+<hr>
+<h2 id="índice">📋 Índice</h2>
+<ol type="1">
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#1-informaci%C3%B3n-general">Información General</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#2-preparaci%C3%B3n-del-entorno">Preparación del
+Entorno</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#3-pr%C3%A1ctica-1-introducci%C3%B3n-a-ssh-y-autenticaci%C3%B3n">Práctica
+1: Introducción a SSH y Autenticación</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#4-pr%C3%A1ctica-2-local-port-forwarding--l">Práctica 2: Local
+Port Forwarding (-L)</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#5-pr%C3%A1ctica-3-dynamic-port-forwarding--d---socks-proxy">Práctica
+3: Dynamic Port Forwarding (-D) - SOCKS Proxy</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#6-pr%C3%A1ctica-4-remote-port-forwarding--r">Práctica 4: Remote
+Port Forwarding (-R)</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#7-pr%C3%A1ctica-5-t%C3%BAneles-m%C3%BAltiples-simult%C3%A1neos">Práctica 5:
+Túneles Múltiples Simultáneos</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#8-pr%C3%A1ctica-6-escenario-real---acceso-a-red-interna">Práctica 6:
+Escenario Real - Acceso a Red Interna</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#9-pr%C3%A1ctica-7-seguridad-y-auditor%C3%ADa-de-t%C3%BAneles">Práctica 7:
+Seguridad y Auditoría de Túneles</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#anexo-a-comandos-de-referencia">Anexo A: Comandos de
+Referencia</a></li>
+<li><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#anexo-b-soluci%C3%B3n-de-problemas">Anexo B: Solución de
+Problemas</a></li>
+</ol>
+<hr>
+<h2 id="información-general">1. Información General</h2>
+<h3 id="objetivos-de-aprendizaje">1.1 Objetivos de Aprendizaje</h3>
+<p>Al finalizar estas prácticas, el alumno será capaz de:</p>
+<ul>
+<li>✅ Configurar y utilizar los 3 tipos de túneles SSH</li>
+<li>✅ Identificar casos de uso apropiados para cada tipo de túnel</li>
+<li>✅ Diagnosticar problemas comunes de conectividad</li>
+<li>✅ Implementar soluciones de acceso remoto seguro</li>
+<li>✅ Auditar y monitorizar túneles activos</li>
+</ul>
+<h3 id="entorno-de-laboratorio">1.2 Entorno de Laboratorio</h3>
+<table>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 16%">
+<col style="width: 23%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Sistema</th>
+<th>Cantidad</th>
+<th>Credenciales</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cliente</strong></td>
+<td>Kali Linux</td>
+<td>10 (una por alumno)</td>
+<td>Usuario: <code>kali</code></td>
+</tr>
+<tr>
+<td><strong>Servidor</strong></td>
+<td>Ubuntu Server</td>
+<td>1 (compartido)</td>
+<td><code>student01</code>..<code>student10</code> /
+<code>lab2025</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="topología-de-red">1.3 Topología de Red</h3>
+<pre><code>[Kali Alumno 01] ----\
+[Kali Alumno 02] -----|
+...                    |--&gt; [Ubuntu Server]
+[Kali Alumno 10] -----/      192.168.99.50
+       ↓                          ↓
+ localhost:9090              Servicios internos
+ localhost:9092              Puerto 8080 (web demo)
+ localhost:3000              Puertos 9091-9100 (-R)</code></pre>
+<hr>
+<h2 id="preparación-del-entorno">2. Preparación del Entorno</h2>
+<h3 id="verificación-previa-5-minutos">2.1 Verificación Previa (5
+minutos)</h3>
+<p><strong>En tu máquina Kali, ejecuta:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Verifica conectividad con el servidor</span></span>
+<span id="cb2-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 3 192.168.99.50</span>
+<span id="cb2-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Verifica que el puerto SSH está accesible</span></span>
+<span id="cb2-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">nc</span> <span class="at">-zv</span> 192.168.99.50 22</span>
+<span id="cb2-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Descarga el script de laboratorio</span></span>
+<span id="cb2-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~</span>
+<span id="cb2-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> http://192.168.99.50/ssh_lab.sh <span class="at">-O</span> ssh_lab.sh <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="kw">||</span> <span class="dt">\</span></span>
+<span id="cb2-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="ex">curl</span> <span class="at">-O</span> http://192.168.99.50/ssh_lab.sh</span>
+<span id="cb2-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Hazlo ejecutable</span></span>
+<span id="cb2-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x ssh_lab.sh</span>
+<span id="cb2-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Edita tu configuración</span></span>
+<span id="cb2-16"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> ssh_lab.sh</span>
+<span id="cb2-17"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Modifica:</span></span>
+<span id="cb2-18"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#   STUDENT_ID="XX"        (tu número: 01 a 10)</span></span>
+<span id="cb2-19"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#   UBUNTU_SERVER_IP="192.168.99.50"</span></span>
+<span id="cb2-20"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Ejecuta diagnóstico</span></span>
+<span id="cb2-22"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> check</span></code></pre></div>
+<p><strong>✅ Checklist de verificación:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox">Ping al servidor
+funciona</label></li>
+<li><label><input type="checkbox">Puerto 22 accesible</label></li>
+<li><label><input type="checkbox">Script descargado y
+ejecutable</label></li>
+<li><label><input type="checkbox">Diagnóstico pasa sin errores
+críticos</label></li>
+</ul>
+<hr>
+<h2 id="práctica-1-introducción-a-ssh-y-autenticación">3. Práctica 1:
+Introducción a SSH y Autenticación</h2>
+<p><strong>Duración:</strong> 20 minutos<br>
+<strong>Dificultad:</strong> ⭐ Básica</p>
+<h3 id="objetivos">3.1 Objetivos</h3>
+<ul>
+<li>Comprender el funcionamiento básico de SSH</li>
+<li>Configurar autenticación por claves públicas</li>
+<li>Verificar la identidad del servidor</li>
+</ul>
+<h3 id="ejercicios">3.2 Ejercicios</h3>
+<h4 id="ejercicio-1.1-primera-conexión">Ejercicio 1.1: Primera
+Conexión</h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Conéctate al servidor por primera vez</span></span>
+<span id="cb3-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50</span>
+<span id="cb3-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Introduce password: lab2025</span></span>
+<span id="cb3-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Observa el mensaje de "fingerprint"</span></span>
+<span id="cb3-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Qué información proporciona?</span></span>
+<span id="cb3-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Respuesta: _______________________________________________</span></span>
+<span id="cb3-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Sal de la sesión</span></span>
+<span id="cb3-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code></pre></div>
+<h4 id="ejercicio-1.2-generación-de-claves">Ejercicio 1.2: Generación de
+Claves</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Genera un par de claves SSH (si no existe)</span></span>
+<span id="cb4-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-keygen</span> <span class="at">-t</span> ed25519 <span class="at">-f</span> ~/.ssh/id_rsa_lab <span class="at">-C</span> <span class="st">"alumno_XX"</span></span>
+<span id="cb4-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica los archivos creados</span></span>
+<span id="cb4-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-la</span> ~/.ssh/</span>
+<span id="cb4-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Qué permisos tienen? Deberían ser:</span></span>
+<span id="cb4-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># id_rsa_lab:     600 (rw-------)</span></span>
+<span id="cb4-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># id_rsa_lab.pub: 644 (rw-r--r--)</span></span></code></pre></div>
+<h4 id="ejercicio-1.3-copia-de-clave-pública">Ejercicio 1.3: Copia de
+Clave Pública</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Copia tu clave pública al servidor</span></span>
+<span id="cb5-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ssh-copy-id</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab.pub studentXX@192.168.99.50</span>
+<span id="cb5-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica que se añadió correctamente</span></span>
+<span id="cb5-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50 <span class="st">"cat ~/.ssh/authorized_keys"</span></span>
+<span id="cb5-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora conecta SIN password</span></span>
+<span id="cb5-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab studentXX@192.168.99.50</span></code></pre></div>
+<h3 id="verificación">3.3 Verificación</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ejecuta el script automatizado</span></span>
+<span id="cb6-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> all</span>
+<span id="cb6-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Deberías ver:</span></span>
+<span id="cb6-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ✓ Conexión SSH funcional</span></span>
+<span id="cb6-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ✓ Servicio web disponible</span></span>
+<span id="cb6-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ✅ Túneles establecidos</span></span></code></pre></div>
+<h3 id="preguntas-de-reflexión">3.4 Preguntas de Reflexión</h3>
+<ol type="1">
+<li><p>¿Por qué es más seguro usar claves que passwords?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Qué es el “fingerprint” de un servidor SSH?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Qué ocurre si pierdes tu clave privada?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="práctica-2-local-port-forwarding--l">4. Práctica 2: Local Port
+Forwarding (-L)</h2>
+<p><strong>Duración:</strong> 45 minutos<br>
+<strong>Dificultad:</strong> ⭐⭐ Intermedia</p>
+<h3 id="objetivos-1">4.1 Objetivos</h3>
+<ul>
+<li>Entender el concepto de Local Port Forwarding</li>
+<li>Acceder a servicios remotos como si fueran locales</li>
+<li>Configurar redirección de puertos</li>
+</ul>
+<h3 id="teoría-qué-es--l">4.2 Teoría: ¿Qué es -L?</h3>
+<pre><code>┌─────────────┐                    ┌──────────────┐
+│  Tu Kali    │                    │ Ubuntu Server│
+│             │    SSH Tunnel      │              │
+│ localhost   │◄──────────────────►│ 127.0.0.1    │
+│   :9090     │                    │   :8080      │
+│             │                    │              │
+└─────────────┘                    └──────────────┘
+     ↓                                      ↓
+ curl http://                        Servicio web
+ localhost:9090                      interno</code></pre>
+<p><strong>Comando:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> <span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">destino_desde_servidor</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">puerto_destino</span><span class="pp">]</span> usuario@servidor</span></code></pre></div>
+<h3 id="ejercicios-1">4.3 Ejercicios</h3>
+<h4 id="ejercicio-2.1-túnel-básico">Ejercicio 2.1: Túnel Básico</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Establece el túnel manual (sin el script)</span></span>
+<span id="cb9-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb9-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-L</span> 9090:localhost:8080 <span class="dt">\</span></span>
+<span id="cb9-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb9-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Explica cada parámetro:</span></span>
+<span id="cb9-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># -i: _______________________________________________</span></span>
+<span id="cb9-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># -L: _______________________________________________</span></span>
+<span id="cb9-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># -N: _______________________________________________</span></span>
+<span id="cb9-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># -f: _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-2.2-verificación-del-túnel">Ejercicio 2.2:
+Verificación del Túnel</h4>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica que el puerto está escuchando</span></span>
+<span id="cb10-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> 9090</span>
+<span id="cb10-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Deberías ver algo como:</span></span>
+<span id="cb10-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># LISTEN 0  128  127.0.0.1:9090  0.0.0.0:*  users:(("ssh",pid=1234,fd=3))</span></span>
+<span id="cb10-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Prueba el servicio</span></span>
+<span id="cb10-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-v</span> http://localhost:9090</span>
+<span id="cb10-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Qué información ves en la respuesta?</span></span>
+<span id="cb10-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-2.3-acceso-vía-navegador">Ejercicio 2.3: Acceso vía
+Navegador</h4>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Si tienes navegador gráfico en Kali:</span></span>
+<span id="cb11-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">firefox</span> http://localhost:9090 <span class="kw">&amp;</span></span>
+<span id="cb11-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># O usa lynx/links en modo texto:</span></span>
+<span id="cb11-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lynx</span> http://localhost:9090</span></code></pre></div>
+<h4 id="ejercicio-2.4-múltiples-puertos">Ejercicio 2.4: Múltiples
+Puertos</h4>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crea un segundo túnel a otro puerto (si existe)</span></span>
+<span id="cb12-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb12-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-L</span> 9095:localhost:22 <span class="dt">\</span></span>
+<span id="cb12-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb12-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora podrías hacer SSH al servidor a través del túnel:</span></span>
+<span id="cb12-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-p</span> 9095 localhost</span>
+<span id="cb12-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ¡Cuidado! Esto crea un bucle SSH. ¿Por qué?</span></span>
+<span id="cb12-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-2.5-túnel-con-script">Ejercicio 2.5: Túnel con
+Script</h4>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usa el script automatizado</span></span>
+<span id="cb13-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> local</span>
+<span id="cb13-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica estado</span></span>
+<span id="cb13-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> status</span></code></pre></div>
+<h3 id="caso-de-uso-real">4.4 Caso de Uso Real</h3>
+<p><strong>Escenario:</strong> Una base de datos MySQL (puerto 3306)
+está en el servidor Ubuntu, pero solo escucha en <code>127.0.0.1</code>
+(no accesible desde fuera).</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Solución: Túnel SSH</span></span>
+<span id="cb14-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 3307:localhost:3306 studentXX@192.168.99.50</span>
+<span id="cb14-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># En tu Kali, conecta a:</span></span>
+<span id="cb14-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-h</span> 127.0.0.1 <span class="at">-P</span> 3307 <span class="at">-u</span> usuario <span class="at">-p</span></span></code></pre></div>
+<h3 id="preguntas">4.5 Preguntas</h3>
+<ol type="1">
+<li><p>¿Qué diferencia hay entre <code>localhost:9090</code> en tu Kali
+y <code>localhost:8080</code> en el servidor?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>Si el servidor tiene 2 interfaces de red (eth0, eth1), ¿puedes
+acceder a servicios en eth1 desde tu Kali usando -L?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Por qué el puerto local debe ser diferente al remoto?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="práctica-3-dynamic-port-forwarding--d---socks-proxy">5. Práctica
+3: Dynamic Port Forwarding (-D) - SOCKS Proxy</h2>
+<p><strong>Duración:</strong> 60 minutos<br>
+<strong>Dificultad:</strong> ⭐⭐⭐ Intermedia-Avanzada</p>
+<h3 id="objetivos-2">5.1 Objetivos</h3>
+<ul>
+<li>Configurar un proxy SOCKS5 dinámico</li>
+<li>Entender la diferencia entre -L y -D</li>
+<li>Navegar “desde dentro” de la red del servidor</li>
+</ul>
+<h3 id="teoría-qué-es--d">5.2 Teoría: ¿Qué es -D?</h3>
+<pre><code>┌─────────────┐                    ┌──────────────┐
+│  Tu Kali    │                    │ Ubuntu Server│
+│             │    SSH Tunnel      │              │
+│ localhost   │◄────SOCKS5────────►│   Cualquier  │
+│   :9092     │      Proxy         │   destino    │
+│             │                    │              │
+└─────────────┘                    └──────────────┘
+     ↓                                      ↓
+ curl --proxy                       192.168.1.50:80
+ socks5h://                         10.0.0.5:443
+ localhost:9092                     google.com:80</code></pre>
+<p><strong>Diferencia clave:</strong></p>
+<ul>
+<li><strong>-L</strong>: Destino fijo y predefinido</li>
+<li><strong>-D</strong>: Destino dinámico, decidido en tiempo de
+ejecución</li>
+</ul>
+<h3 id="ejercicios-2">5.3 Ejercicios</h3>
+<h4 id="ejercicio-3.1-crear-proxy-socks">Ejercicio 3.1: Crear Proxy
+SOCKS</h4>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Establece el túnel dinámico</span></span>
+<span id="cb16-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb16-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-D</span> 9092 <span class="dt">\</span></span>
+<span id="cb16-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb16-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica</span></span>
+<span id="cb16-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> 9092</span></code></pre></div>
+<h4 id="ejercicio-3.2-prueba-con-curl">Ejercicio 3.2: Prueba con
+curl</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Accede al servicio web de la VM vía proxy</span></span>
+<span id="cb17-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proxy</span> socks5h://localhost:9092 http://localhost:8080</span>
+<span id="cb17-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Compara con el túnel -L:</span></span>
+<span id="cb17-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:9090</span>
+<span id="cb17-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Obtienes el mismo resultado?</span></span>
+<span id="cb17-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-3.3-resolución-dns-remota">Ejercicio 3.3: Resolución
+DNS Remota</h4>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># socks5h:// resuelve DNS desde el servidor</span></span>
+<span id="cb18-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># socks5:// resuelve DNS localmente</span></span>
+<span id="cb18-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Prueba ambos:</span></span>
+<span id="cb18-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proxy</span> socks5h://localhost:9092 http://google.com</span>
+<span id="cb18-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proxy</span> socks5://localhost:9092 http://google.com</span>
+<span id="cb18-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Hay diferencia? ¿Cuándo importa?</span></span>
+<span id="cb18-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-3.4-configuración-en-navegador">Ejercicio 3.4:
+Configuración en Navegador</h4>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Firefox/Chrome manual:</span></span>
+<span id="cb19-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Abre Firefox</span></span>
+<span id="cb19-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Preferencias → Configuración de red</span></span>
+<span id="cb19-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Configuración manual de proxy:</span></span>
+<span id="cb19-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#    SOCKS Host: 127.0.0.1</span></span>
+<span id="cb19-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#    Puerto: 9092</span></span>
+<span id="cb19-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#    Versión: SOCKS5</span></span>
+<span id="cb19-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Marca "Proxy DNS cuando se use SOCKS v5"</span></span>
+<span id="cb19-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Navega a http://192.168.99.50:8080</span></span>
+<span id="cb19-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#    (la IP del servidor, no localhost)</span></span>
+<span id="cb19-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. ¿Funciona? ¿Por qué?</span></span>
+<span id="cb19-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-3.5-proxychains-herramienta-avanzada">Ejercicio 3.5:
+proxychains (Herramienta Avanzada)</h4>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Instala proxychains (si no está)</span></span>
+<span id="cb20-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> apt install <span class="at">-y</span> proxychains4</span>
+<span id="cb20-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Configura</span></span>
+<span id="cb20-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"socks5 127.0.0.1 9092"</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/proxychains4.conf</span>
+<span id="cb20-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Usa cualquier herramienta a través del proxy:</span></span>
+<span id="cb20-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> curl http://localhost:8080</span>
+<span id="cb20-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> nmap <span class="at">-sT</span> 192.168.1.0/24</span>
+<span id="cb20-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> ssh studentXX@192.168.1.50</span>
+<span id="cb20-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ⚠️ Nota: nmap puede ser lento vía proxy</span></span></code></pre></div>
+<h4 id="ejercicio-3.6-script-automatizado">Ejercicio 3.6: Script
+Automatizado</h4>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> dynamic</span>
+<span id="cb21-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> status</span></code></pre></div>
+<h3 id="caso-de-uso-real-1">5.4 Caso de Uso Real</h3>
+<p><strong>Escenario:</strong> Eres pentester y necesitas acceder a una
+red interna (10.0.0.0/24) que solo es visible desde el servidor Ubuntu
+comprometido.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Crea proxy SOCKS</span></span>
+<span id="cb22-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-D</span> 9092 studentXX@192.168.99.50</span>
+<span id="cb22-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Escanea la red interna</span></span>
+<span id="cb22-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> nmap <span class="at">-sT</span> <span class="at">-Pn</span> 10.0.0.0/24</span>
+<span id="cb22-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Accede a servicios descubiertos</span></span>
+<span id="cb22-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> curl http://10.0.0.5:80</span></code></pre></div>
+<h3 id="comparativa--l-vs--d">5.5 Comparativa: -L vs -D</h3>
+<table>
+<colgroup>
+<col style="width: 24%">
+<col style="width: 30%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr>
+<th>Característica</th>
+<th>-L (Local)</th>
+<th>-D (Dynamic)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Destino</strong></td>
+<td>Fijo, predefinido</td>
+<td>Dinámico, cualquier IP</td>
+</tr>
+<tr>
+<td><strong>Configuración</strong></td>
+<td>Simple</td>
+<td>Requiere app con soporte proxy</td>
+</tr>
+<tr>
+<td><strong>Casos de uso</strong></td>
+<td>1 servicio específico</td>
+<td>Múltiples servicios/red completa</td>
+</tr>
+<tr>
+<td><strong>Overhead</strong></td>
+<td>Bajo</td>
+<td>Medio ( SOCKS protocol)</td>
+</tr>
+<tr>
+<td><strong>Flexibilidad</strong></td>
+<td>Baja</td>
+<td>Alta</td>
+</tr>
+</tbody>
+</table>
+<h3 id="preguntas-1">5.6 Preguntas</h3>
+<ol type="1">
+<li><p>¿Cuándo usarías -D en lugar de -L?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Por qué es importante <code>socks5h://</code> en lugar de
+<code>socks5://</code>?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>Si cierras la sesión SSH, ¿qué pasa con las conexiones activas a
+través del proxy?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="práctica-4-remote-port-forwarding--r">6. Práctica 4: Remote Port
+Forwarding (-R)</h2>
+<p><strong>Duración:</strong> 50 minutos<br>
+<strong>Dificultad:</strong> ⭐⭐⭐ Intermedia-Avanzada</p>
+<h3 id="objetivos-3">6.1 Objetivos</h3>
+<ul>
+<li>Comprender el concepto de Remote Port Forwarding</li>
+<li>Exponer servicios locales a un servidor remoto</li>
+<li>Entender casos de uso en desarrollo y soporte</li>
+</ul>
+<h3 id="teoría-qué-es--r">6.2 Teoría: ¿Qué es -R?</h3>
+<pre><code>┌─────────────┐                    ┌──────────────┐
+│  Tu Kali    │                    │ Ubuntu Server│
+│             │    SSH Tunnel      │              │
+│ 127.0.0.1   │◄──────────────────►│ localhost    │
+│   :3000     │                    │   :9091+XX   │
+│             │                    │              │
+└─────────────┘                    └──────────────┘
+     ↓                                      ↓
+ Servicio local                    ssh desde Ubuntu
+ (tu máquina)                      curl localhost:9091</code></pre>
+<p><strong>Dirección inversa:</strong></p>
+<ul>
+<li><strong>-L</strong>: Local → Remoto (accedes TÚ al servidor)</li>
+<li><strong>-R</strong>: Remoto → Local (el servidor accede a TI)</li>
+</ul>
+<h3 id="ejercicios-3">6.3 Ejercicios</h3>
+<h4 id="ejercicio-4.1-servicio-local-de-demo">Ejercicio 4.1: Servicio
+Local de Demo</h4>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crea un servicio web simple en tu Kali</span></span>
+<span id="cb24-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> /tmp/mi_servicio</span>
+<span id="cb24-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"&lt;h1&gt;Servicio de Alumno XX&lt;/h1&gt;&lt;p&gt;</span><span class="va">$(</span><span class="fu">date</span><span class="va">)</span><span class="st">&lt;/p&gt;"</span> <span class="op">&gt;</span> /tmp/mi_servicio/index.html</span>
+<span id="cb24-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /tmp/mi_servicio</span>
+<span id="cb24-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> http.server 3000 <span class="at">--bind</span> 127.0.0.1 <span class="kw">&amp;</span></span>
+<span id="cb24-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica</span></span>
+<span id="cb24-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:3000</span></code></pre></div>
+<h4 id="ejercicio-4.2-túnel-remote-manual">Ejercicio 4.2: Túnel Remote
+Manual</h4>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Establece el túnel -R</span></span>
+<span id="cb25-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># NOTA: El puerto remoto debe ser único por alumno</span></span>
+<span id="cb25-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co"># student01 → 9091, student02 → 9092, etc.</span></span>
+<span id="cb25-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="va">PUERTO_REMOTO</span><span class="op">=</span><span class="va">$((</span><span class="dv">9090</span> <span class="op">+</span> <span class="va">XX))</span></span>
+<span id="cb25-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb25-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">-R</span> <span class="va">${PUERTO_REMOTO}</span>:localhost:3000 <span class="dt">\</span></span>
+<span id="cb25-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-8" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb25-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica DESDE el servidor Ubuntu:</span></span>
+<span id="cb25-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50 <span class="st">"ss -tln | grep </span><span class="va">$PUERTO_REMOTO</span><span class="st">"</span></span></code></pre></div>
+<h4 id="ejercicio-4.3-acceso-desde-el-servidor">Ejercicio 4.3: Acceso
+desde el Servidor</h4>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Conéctate al servidor y prueba el túnel</span></span>
+<span id="cb26-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50</span>
+<span id="cb26-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Dentro del servidor:</span></span>
+<span id="cb26-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:9091  <span class="co"># (cambia 9091 por tu puerto)</span></span>
+<span id="cb26-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Deberías ver el HTML de tu servicio local en Kali</span></span>
+<span id="cb26-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Sal</span></span>
+<span id="cb26-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code></pre></div>
+<h4 id="ejercicio-4.4-gatewayports-avanzado">Ejercicio 4.4: GatewayPorts
+(Avanzado)</h4>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Por defecto, -R solo escucha en 127.0.0.1 del servidor</span></span>
+<span id="cb27-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Para que otras máquinas de la red accedan:</span></span>
+<span id="cb27-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb27-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">-o</span> GatewayPorts=yes <span class="dt">\</span></span>
+<span id="cb27-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">-R</span> 0.0.0.0:9091:localhost:3000 <span class="dt">\</span></span>
+<span id="cb27-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-7" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb27-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora cualquier máquina puede:</span></span>
+<span id="cb27-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="co"># curl http://192.168.99.50:9091</span></span>
+<span id="cb27-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ⚠️ Riesgo de seguridad: ¿Por qué?</span></span>
+<span id="cb27-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-4.5-script-automatizado">Ejercicio 4.5: Script
+Automatizado</h4>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> remote</span>
+<span id="cb28-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> status</span></code></pre></div>
+<h3 id="caso-de-uso-real-2">6.4 Caso de Uso Real</h3>
+<p><strong>Escenario:</strong> Desarrollas una web app en localhost:3000
+y quieres que un cliente la vea sin subirla a un servidor.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Túnel -R</span></span>
+<span id="cb29-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-R</span> 8080:localhost:3000 tu_servidor.com</span>
+<span id="cb29-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. El cliente accede:</span></span>
+<span id="cb29-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># http://tu_servidor.com:8080</span></span>
+<span id="cb29-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. ¡Los cambios en tu localhost se reflejan al instante!</span></span></code></pre></div>
+<h3 id="comparativa--l-vs--r">6.5 Comparativa: -L vs -R</h3>
+<table>
+<thead>
+<tr>
+<th>Característica</th>
+<th>-L (Local)</th>
+<th>-R (Remote)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dirección</strong></td>
+<td>Tú → Servidor</td>
+<td>Servidor → Tú</td>
+</tr>
+<tr>
+<td><strong>Quién inicia</strong></td>
+<td>Cliente SSH</td>
+<td>Cliente SSH</td>
+</tr>
+<tr>
+<td><strong>Quién accede</strong></td>
+<td>Tú (desde local)</td>
+<td>Otros (desde servidor)</td>
+</tr>
+<tr>
+<td><strong>Puerto escucha</strong></td>
+<td>Tu máquina</td>
+<td>Servidor remoto</td>
+</tr>
+<tr>
+<td><strong>Caso típico</strong></td>
+<td>Acceder a BD interna</td>
+<td>Demo desarrollo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="preguntas-2">6.6 Preguntas</h3>
+<ol type="1">
+<li><p>¿Por qué -R es útil para debuggear webhooks de
+GitHub/Stripe?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Qué limitaciones tiene -R comparado con -L?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>Si tu Kali cambia de IP (DHCP), ¿se rompe el túnel -R?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="práctica-5-túneles-múltiples-simultáneos">7. Práctica 5: Túneles
+Múltiples Simultáneos</h2>
+<p><strong>Duración:</strong> 40 minutos<br>
+<strong>Dificultad:</strong> ⭐⭐ Intermedia</p>
+<h3 id="objetivos-4">7.1 Objetivos</h3>
+<ul>
+<li>Gestionar múltiples túneles concurrentes</li>
+<li>Entender interacciones entre túneles</li>
+<li>Optimizar recursos del sistema</li>
+</ul>
+<h3 id="ejercicios-4">7.2 Ejercicios</h3>
+<h4 id="ejercicio-5.1-los-3-túneles-a-la-vez">Ejercicio 5.1: Los 3
+Túneles a la Vez</h4>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usa el modo persistente del script</span></span>
+<span id="cb30-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> all</span>
+<span id="cb30-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica todos los puertos</span></span>
+<span id="cb30-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">'909[0-2]|3000'</span></span>
+<span id="cb30-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Deberías ver:</span></span>
+<span id="cb30-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 9090  (-L)</span></span>
+<span id="cb30-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 9092  (-D)</span></span>
+<span id="cb30-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 3000  (servicio local)</span></span></code></pre></div>
+<h4 id="ejercicio-5.2-pruebas-concurrentes">Ejercicio 5.2: Pruebas
+Concurrentes</h4>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 1: Túnel -L</span></span>
+<span id="cb31-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:9090</span>
+<span id="cb31-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 2: Túnel -D</span></span>
+<span id="cb31-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">--proxy</span> socks5h://localhost:9092 http://localhost:8080</span>
+<span id="cb31-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Terminal 3: Verifica túnel -R</span></span>
+<span id="cb31-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50 <span class="st">"curl http://localhost:9091"</span></span>
+<span id="cb31-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Funcionan los 3 simultáneamente?</span></span>
+<span id="cb31-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-5.3-monitorización-de-recursos">Ejercicio 5.3:
+Monitorización de Recursos</h4>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># En tu Kali, monitoriza:</span></span>
+<span id="cb32-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="ex">watch</span> <span class="at">-n</span> 2 <span class="st">'ps aux | grep ssh | grep -v grep'</span></span>
+<span id="cb32-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Observa:</span></span>
+<span id="cb32-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># - Número de procesos SSH</span></span>
+<span id="cb32-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="co"># - Uso de memoria</span></span>
+<span id="cb32-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - PIDs de cada túnel</span></span>
+<span id="cb32-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Cuántos procesos SSH ves?</span></span>
+<span id="cb32-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-5.4-cierre-selectivo">Ejercicio 5.4: Cierre
+Selectivo</h4>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mata solo el túnel -L (puerto 9090)</span></span>
+<span id="cb33-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pkill</span> <span class="at">-f</span> <span class="st">"ssh.*-L.*9090"</span></span>
+<span id="cb33-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica</span></span>
+<span id="cb33-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> 9090  <span class="co"># Debería estar libre</span></span>
+<span id="cb33-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Los otros túneles siguen activos:</span></span>
+<span id="cb33-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> 9092  <span class="co"># Debería seguir activo</span></span>
+<span id="cb33-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Vuelve a crear solo -L</span></span>
+<span id="cb33-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./ssh_lab.sh</span> local</span></code></pre></div>
+<h4 id="ejercicio-5.5-multiplexación-ssh-avanzado">Ejercicio 5.5:
+Multiplexación SSH (Avanzado)</h4>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># En lugar de 3 conexiones SSH, usa 1 con multiplexación</span></span>
+<span id="cb34-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Crea directorio de control</span></span>
+<span id="cb34-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/.ssh/sockets</span>
+<span id="cb34-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Añade a ~/.ssh/config:</span></span>
+<span id="cb34-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;&gt;</span> ~/.ssh/config <span class="op">&lt;&lt; 'EOF'</span></span>
+<span id="cb34-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="st">Host ubuntu-server</span></span>
+<span id="cb34-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-9" aria-hidden="true" tabindex="-1"></a><span class="st">   HostName 192.168.99.50</span></span>
+<span id="cb34-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="st">    User studentXX</span></span>
+<span id="cb34-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="st">    ControlMaster auto</span></span>
+<span id="cb34-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="st">    ControlPath ~/.ssh/sockets/%r@%h-%p</span></span>
+<span id="cb34-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="st">    ControlPersist 600</span></span>
+<span id="cb34-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb34-15"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Primera conexión (crea socket maestro)</span></span>
+<span id="cb34-17"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab ubuntu-server</span>
+<span id="cb34-18"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-19"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Los siguientes túneles reusan la misma conexión:</span></span>
+<span id="cb34-20"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 9090:localhost:8080 <span class="at">-N</span> <span class="at">-f</span> ubuntu-server</span>
+<span id="cb34-21"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-D</span> 9092 <span class="at">-N</span> <span class="at">-f</span> ubuntu-server</span>
+<span id="cb34-22"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-R</span> 9091:localhost:3000 <span class="at">-N</span> <span class="at">-f</span> ubuntu-server</span>
+<span id="cb34-23"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-24"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica: solo 1 proceso SSH maestro</span></span>
+<span id="cb34-25"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb34-25" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> aux <span class="kw">|</span> <span class="fu">grep</span> ssh</span></code></pre></div>
+<h3 id="preguntas-3">7.3 Preguntas</h3>
+<ol type="1">
+<li><p>¿Cuántos procesos SSH se crean con 3 túneles manuales?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Qué ventaja tiene ControlMaster?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Puede un túnel -L y un túnel -D usar el mismo puerto
+local?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="práctica-6-escenario-real---acceso-a-red-interna">8. Práctica 6:
+Escenario Real - Acceso a Red Interna</h2>
+<p><strong>Duración:</strong> 60 minutos<br>
+<strong>Dificultad:</strong> ⭐⭐⭐⭐ Avanzada</p>
+<h3 id="objetivos-5">8.1 Objetivos</h3>
+<ul>
+<li>Combinar múltiples técnicas de túnel</li>
+<li>Simular un escenario de pentesting real</li>
+<li>Acceder a recursos de red interna</li>
+</ul>
+<h3 id="escenario">8.2 Escenario</h3>
+<p><strong>Contexto:</strong><br>
+El servidor Ubuntu (192.168.99.50) tiene acceso a una red interna
+“oculta” (10.10.10.0/24) que no es reachable directamente desde tu Kali.
+Dentro de esa red hay:</p>
+<ul>
+<li>Un servidor web (10.10.10.50:80)</li>
+<li>Una base de datos MySQL (10.10.10.60:3306)</li>
+<li>Un servidor SSH (10.10.10.70:22)</li>
+</ul>
+<p><strong>Objetivo:</strong> Acceder a estos 3 servicios desde tu
+Kali.</p>
+<h3 id="ejercicios-5">8.3 Ejercicios</h3>
+<h4 id="ejercicio-6.1-reconocimiento">Ejercicio 6.1: Reconocimiento</h4>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Conéctate al servidor Ubuntu</span></span>
+<span id="cb35-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50</span>
+<span id="cb35-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Identifica interfaces de red</span></span>
+<span id="cb35-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ip</span> addr show</span>
+<span id="cb35-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. ¿Tiene acceso a 10.10.10.0/24?</span></span>
+<span id="cb35-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ping</span> <span class="at">-c</span> 2 10.10.10.50</span>
+<span id="cb35-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Escanea la red interna (desde Ubuntu)</span></span>
+<span id="cb35-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nmap <span class="at">-sT</span> <span class="at">-Pn</span> 10.10.10.0/24</span>
+<span id="cb35-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Sal</span></span>
+<span id="cb35-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="bu">exit</span></span></code></pre></div>
+<h4 id="ejercicio-6.2-túnel--l-a-servidor-web">Ejercicio 6.2: Túnel -L a
+Servidor Web</h4>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb36-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crea túnel al web interno</span></span>
+<span id="cb36-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb36-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-L</span> 8080:10.10.10.50:80 <span class="dt">\</span></span>
+<span id="cb36-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb36-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Accede desde tu Kali</span></span>
+<span id="cb36-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:8080</span>
+<span id="cb36-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="co"># O en navegador:</span></span>
+<span id="cb36-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb36-10" aria-hidden="true" tabindex="-1"></a><span class="ex">firefox</span> http://localhost:8080 <span class="kw">&amp;</span></span></code></pre></div>
+<h4 id="ejercicio-6.3-túnel-a-mysql">Ejercicio 6.3: Túnel a MySQL</h4>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crea túnel a BD</span></span>
+<span id="cb37-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb37-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-L</span> 3307:10.10.10.60:3306 <span class="dt">\</span></span>
+<span id="cb37-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb37-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Conecta (si tienes mysql-client)</span></span>
+<span id="cb37-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-h</span> 127.0.0.1 <span class="at">-P</span> 3307 <span class="at">-u</span> root <span class="at">-p</span></span>
+<span id="cb37-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="co"># O verifica con nmap</span></span>
+<span id="cb37-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb37-10" aria-hidden="true" tabindex="-1"></a><span class="fu">nmap</span> <span class="at">-sV</span> <span class="at">-p</span> 3307 localhost</span></code></pre></div>
+<h4 id="ejercicio-6.4-proxy-socks-para-acceso-total">Ejercicio 6.4:
+Proxy SOCKS para Acceso Total</h4>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># En lugar de túneles individuales, usa -D</span></span>
+<span id="cb38-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb38-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">-D</span> 9092 <span class="dt">\</span></span>
+<span id="cb38-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-4" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb38-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Configura proxychains</span></span>
+<span id="cb38-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"socks5 127.0.0.1 9092"</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/proxychains4.conf</span>
+<span id="cb38-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Escanea la red interna DESDE tu Kali</span></span>
+<span id="cb38-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-10" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> nmap <span class="at">-sT</span> <span class="at">-Pn</span> 10.10.10.0/24</span>
+<span id="cb38-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Accede a cualquier servicio:</span></span>
+<span id="cb38-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> curl http://10.10.10.50:80</span>
+<span id="cb38-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="ex">proxychains4</span> ssh root@10.10.10.70</span></code></pre></div>
+<h4 id="ejercicio-6.5-túnel-en-cascada-avanzado">Ejercicio 6.5: Túnel en
+Cascada (Avanzado)</h4>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb39-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Si 10.10.10.70 tiene SSH, crea un túnel en cascada:</span></span>
+<span id="cb39-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Primero al servidor Ubuntu</span></span>
+<span id="cb39-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa_lab <span class="dt">\</span></span>
+<span id="cb39-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">-L</span> 2222:10.10.10.70:22 <span class="dt">\</span></span>
+<span id="cb39-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-6" aria-hidden="true" tabindex="-1"></a>   <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb39-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Ahora conecta al SSH interno</span></span>
+<span id="cb39-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-p</span> 2222 root@localhost</span>
+<span id="cb39-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="co"># ¡Estás en el servidor interno!</span></span></code></pre></div>
+<h3 id="diagrama-del-escenario">8.4 Diagrama del Escenario</h3>
+<pre><code>┌─────────────┐     SSH      ┌──────────────┐    Red Interna   ┌─────────────┐
+│  Tu Kali    │─────────────►│ Ubuntu Server│─────────────────►│ 10.10.10.50 │
+│             │   Túneles    │ 192.168.99.50│    10.10.10.0/24 │   :80 (Web) │
+│ localhost   │              │              │                  └─────────────┘
+│   :8080     │              │              │                  ┌─────────────┐
+│   :3307     │              │              │─────────────────►│ 10.10.10.60 │
+│   :2222     │              │              │                  │  :3306 (BD) │
+└─────────────┘              └──────────────┘                  └─────────────┘
+                                                                  ┌─────────────┐
+                                                                  │ 10.10.10.70 │
+                                                                  │   :22 (SSH) │
+                                                                  └─────────────┘</code></pre>
+<h3 id="preguntas-4">8.5 Preguntas</h3>
+<ol type="1">
+<li><p>¿Qué método es más eficiente: múltiples -L o un -D con
+proxychains?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Puedes crear un túnel -R desde el servidor interno hacia tu
+Kali?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>Si la red interna usa IPs privadas no enrutables, ¿cómo llega el
+tráfico de vuelta a tu Kali?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="práctica-7-seguridad-y-auditoría-de-túneles">9. Práctica 7:
+Seguridad y Auditoría de Túneles</h2>
+<p><strong>Duración:</strong> 40 minutos<br>
+<strong>Dificultad:</strong> ⭐⭐⭐ Intermedia-Avanzada</p>
+<h3 id="objetivos-6">9.1 Objetivos</h3>
+<ul>
+<li>Identificar riesgos de seguridad en túneles SSH</li>
+<li>Auditar túneles activos</li>
+<li>Implementar buenas prácticas</li>
+</ul>
+<h3 id="ejercicios-6">9.2 Ejercicios</h3>
+<h4 id="ejercicio-7.1-auditoría-de-túneles-propios">Ejercicio 7.1:
+Auditoría de Túneles Propios</h4>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lista todos tus túneles SSH</span></span>
+<span id="cb41-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> aux <span class="kw">|</span> <span class="fu">grep</span> <span class="st">"ssh.*-[LDR]"</span></span>
+<span id="cb41-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Para cada túnel, identifica:</span></span>
+<span id="cb41-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="co"># - PID</span></span>
+<span id="cb41-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="co"># - Tipo de túnel (-L, -D, -R)</span></span>
+<span id="cb41-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - Puertos involucrados</span></span>
+<span id="cb41-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="co"># - Usuario remoto</span></span>
+<span id="cb41-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Ejemplo de salida:</span></span>
+<span id="cb41-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="co"># kali  1234  0.0  0.1  ssh -L 9090:localhost:8080 -N -f student01@192.168.99.50</span></span>
+<span id="cb41-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                        ↑    ↑                ↑</span></span>
+<span id="cb41-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="co">#                       PID  Tipo            Destino</span></span></code></pre></div>
+<h4 id="ejercicio-7.2-puertos-escuchando">Ejercicio 7.2: Puertos
+Escuchando</h4>
+<div class="sourceCode" id="cb42"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb42-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica qué puertos están abiertos en tu Kali</span></span>
+<span id="cb42-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> LISTEN</span>
+<span id="cb42-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Cuáles son de túneles SSH?</span></span>
+<span id="cb42-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> ssh</span>
+<span id="cb42-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Alguno es accesible desde otras interfaces (0.0.0.0)?</span></span>
+<span id="cb42-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">'0.0.0.0'</span></span>
+<span id="cb42-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Riesgo: Si un puerto escucha en 0.0.0.0, cualquier máquina de la red puede acceder</span></span></code></pre></div>
+<h4 id="ejercicio-7.3-túneles-no-autorizados-simulación">Ejercicio 7.3:
+Túneles No Autorizados (Simulación)</h4>
+<div class="sourceCode" id="cb43"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb43-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Como profesor, en el servidor Ubuntu:</span></span>
+<span id="cb43-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> netstat <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> sshd</span>
+<span id="cb43-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Puedes identificar qué usuario tiene qué túnel?</span></span>
+<span id="cb43-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ps aux <span class="kw">|</span> <span class="fu">grep</span> sshd</span>
+<span id="cb43-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver logs de autenticación</span></span>
+<span id="cb43-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tail <span class="at">-50</span> /var/log/auth.log <span class="kw">|</span> <span class="fu">grep</span> student</span>
+<span id="cb43-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Qué información revela?</span></span>
+<span id="cb43-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb43-11" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-7.4-restricciones-en-sshd_config">Ejercicio 7.4:
+Restricciones en sshd_config</h4>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb44-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># En el servidor Ubuntu (como root), edita:</span></span>
+<span id="cb44-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> nano /etc/ssh/sshd_config</span>
+<span id="cb44-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Añade restricciones por usuario:</span></span>
+<span id="cb44-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Match</span> User student<span class="pp">*</span></span>
+<span id="cb44-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Solo permitir ciertos tipos de túnel</span></span>
+<span id="cb44-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">AllowTcpForwarding</span> local  <span class="co"># Solo -L, no -R ni -D</span></span>
+<span id="cb44-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># O:</span></span>
+<span id="cb44-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># AllowTcpForwarding no    # Deshabilitar todos los túneles</span></span>
+<span id="cb44-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Limitar puertos remotos (-R)</span></span>
+<span id="cb44-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">PermitOpen</span> localhost:8080 localhost:3306</span>
+<span id="cb44-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forzar comando (evita shell interactiva)</span></span>
+<span id="cb44-15"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ForceCommand echo "Solo túneles permitidos"</span></span>
+<span id="cb44-16"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-17"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Reinicia SSH</span></span>
+<span id="cb44-18"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-18" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> systemctl restart ssh</span>
+<span id="cb44-19"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-20"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Prueba desde tu Kali:</span></span>
+<span id="cb44-21"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-D</span> 9092 studentXX@192.168.99.50</span>
+<span id="cb44-22"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Funciona? ¿Qué error da?</span></span>
+<span id="cb44-23"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb44-23" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span></code></pre></div>
+<h4 id="ejercicio-7.5-túneles-cifrados---verificación">Ejercicio 7.5:
+Túneles Cifrados - Verificación</h4>
+<div class="sourceCode" id="cb45"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb45-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica que el tráfico está cifrado</span></span>
+<span id="cb45-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> tcpdump <span class="at">-i</span> any <span class="at">-n</span> port 22 <span class="at">-X</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-50</span></span>
+<span id="cb45-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Ves datos legibles o cifrados?</span></span>
+<span id="cb45-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="co"># _______________________________________________</span></span>
+<span id="cb45-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Compara con HTTP sin cifrar:</span></span>
+<span id="cb45-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="ex">tcpdump</span> <span class="at">-i</span> any <span class="at">-n</span> port 80 <span class="at">-X</span> <span class="kw">|</span> <span class="fu">head</span> <span class="at">-50</span></span>
+<span id="cb45-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ¿Ves diferencias?</span></span></code></pre></div>
+<h4 id="ejercicio-7.6-buenas-prácticas">Ejercicio 7.6: Buenas
+Prácticas</h4>
+<div class="sourceCode" id="cb46"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb46-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Usa claves con passphrase</span></span>
+<span id="cb46-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-keygen</span> <span class="at">-p</span> <span class="at">-f</span> ~/.ssh/id_rsa_lab</span>
+<span id="cb46-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Limita tiempo de vida del túnel</span></span>
+<span id="cb46-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-o</span> ServerAliveInterval=60 <span class="at">-o</span> ServerAliveCountMax=5 <span class="dt">\</span></span>
+<span id="cb46-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-6" aria-hidden="true" tabindex="-1"></a>   <span class="at">-L</span> 9090:localhost:8080 <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb46-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Usa puertos no estándar (seguridad por oscuridad)</span></span>
+<span id="cb46-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> 54321:localhost:8080 <span class="at">-N</span> <span class="at">-f</span> studentXX@192.168.99.50</span>
+<span id="cb46-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Revoca acceso eliminando clave del servidor</span></span>
+<span id="cb46-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> studentXX@192.168.99.50 <span class="st">"sed -i '/tu_clave/d' ~/.ssh/authorized_keys"</span></span></code></pre></div>
+<h3 id="checklist-de-seguridad">9.3 Checklist de Seguridad</h3>
+<p><strong>Antes de crear un túnel:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox">¿El puerto local está
+libre?</label></li>
+<li><label><input type="checkbox">¿Necesito realmente este
+túnel?</label></li>
+<li><label><input type="checkbox">¿Estoy exponiendo datos
+sensibles?</label></li>
+<li><label><input type="checkbox">¿La clave SSH tiene
+passphrase?</label></li>
+</ul>
+<p><strong>Después de crear un túnel:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox">¿Verifiqué que solo escucha en
+127.0.0.1 (no 0.0.0.0)?</label></li>
+<li><label><input type="checkbox">¿Documenté el propósito del
+túnel?</label></li>
+<li><label><input type="checkbox">¿Sé cómo cerrarlo?</label></li>
+</ul>
+<p><strong>Al finalizar la práctica:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox">Cerré todos los túneles</label></li>
+<li><label><input type="checkbox">Verifiqué con <code>ss -tlnp</code>
+que no quedan puertos abiertos</label></li>
+<li><label><input type="checkbox">Eliminé claves temporales si las
+creé</label></li>
+</ul>
+<h3 id="preguntas-5">9.4 Preguntas</h3>
+<ol type="1">
+<li><p>¿Por qué es peligroso <code>GatewayPorts=yes</code> en
+producción?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Puede un atacante interceptar el tráfico de un túnel SSH?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+<li><p>¿Qué información revela <code>ps aux</code> sobre tus
+túneles?<br>
+<strong>Respuesta:</strong>
+**********************___**********************</p></li>
+</ol>
+<hr>
+<h2 id="anexo-a-comandos-de-referencia">Anexo A: Comandos de
+Referencia</h2>
+<h3 id="a.1-comandos-esenciales">A.1 Comandos Esenciales</h3>
+<div class="sourceCode" id="cb47"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb47-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Local Port Forwarding (-L)</span></span>
+<span id="cb47-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-L</span> <span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">host_remoto</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">puerto_remoto</span><span class="pp">]</span> usuario@servidor</span>
+<span id="cb47-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Dynamic Port Forwarding (-D)</span></span>
+<span id="cb47-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-D</span> <span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span> usuario@servidor</span>
+<span id="cb47-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Remote Port Forwarding (-R)</span></span>
+<span id="cb47-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-R</span> <span class="pp">[</span><span class="ss">puerto_remoto</span><span class="pp">]</span>:localhost:<span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span> usuario@servidor</span>
+<span id="cb47-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Combinar opciones comunes</span></span>
+<span id="cb47-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/id_rsa <span class="at">-o</span> StrictHostKeyChecking=no <span class="at">-N</span> <span class="at">-f</span> usuario@servidor</span>
+<span id="cb47-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-13"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver túneles activos</span></span>
+<span id="cb47-14"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ps</span> aux <span class="kw">|</span> <span class="fu">grep</span> <span class="st">"ssh.*-[LDR]"</span></span>
+<span id="cb47-15"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-15" aria-hidden="true" tabindex="-1"></a><span class="ex">ss</span> <span class="at">-tlnp</span> <span class="kw">|</span> <span class="fu">grep</span> ssh</span>
+<span id="cb47-16"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-17"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Cerrar túnel específico</span></span>
+<span id="cb47-18"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-18" aria-hidden="true" tabindex="-1"></a><span class="ex">pkill</span> <span class="at">-f</span> <span class="st">"ssh.*-L.*9090"</span></span>
+<span id="cb47-19"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-20"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver logs de SSH</span></span>
+<span id="cb47-21"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-21" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-f</span> /var/log/auth.log  <span class="co"># En servidor</span></span>
+<span id="cb47-22"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb47-22" aria-hidden="true" tabindex="-1"></a><span class="ex">journalctl</span> <span class="at">-f</span> <span class="at">-u</span> ssh       <span class="co"># En systemd</span></span></code></pre></div>
+<h3 id="a.2-script-rápido-de-diagnóstico">A.2 Script Rápido de
+Diagnóstico</h3>
+<div class="sourceCode" id="cb48"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb48-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb48-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"🔍 Diagnóstico rápido:"</span></span>
+<span id="cb48-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"1. Conectividad: </span><span class="va">$(</span><span class="ex">nc</span> <span class="at">-zv</span> 192.168.99.50 22 <span class="op">&amp;&gt;</span>/dev/null <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">'✓ OK'</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">'✗ FAIL'</span><span class="va">)</span><span class="st">"</span></span>
+<span id="cb48-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"2. Puertos libres: </span><span class="va">$(</span><span class="ex">ss</span> <span class="at">-tln</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">'909[0-2]'</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span><span class="va">)</span><span class="st"> ocupados"</span></span>
+<span id="cb48-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"3. Clave SSH: </span><span class="va">$(</span><span class="bu">[</span> <span class="ot">-f</span> ~/.ssh/id_rsa_lab <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">echo</span> <span class="st">'✓ Existe'</span> <span class="kw">||</span> <span class="bu">echo</span> <span class="st">'✗ No existe'</span><span class="va">)</span><span class="st">"</span></span>
+<span id="cb48-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"4. Túneles activos: </span><span class="va">$(</span><span class="fu">ps</span> aux <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-c</span> <span class="st">'[s]sh.*-[LDR]'</span><span class="va">)</span><span class="st">"</span></span></code></pre></div>
+<hr>
+<h2 id="anexo-b-solución-de-problemas">Anexo B: Solución de
+Problemas</h2>
+<h3 id="b.1-problemas-comunes">B.1 Problemas Comunes</h3>
+<table>
+<colgroup>
+<col style="width: 36%">
+<col style="width: 34%">
+<col style="width: 29%">
+</colgroup>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Causa Probable</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Permission denied (publickey,password)</code></td>
+<td>Clave no copiada o password incorrecto</td>
+<td><code>ssh-copy-id</code> o verifica password</td>
+</tr>
+<tr>
+<td><code>Address already in use</code></td>
+<td>Puerto ocupado por otro proceso</td>
+<td><code>pkill -f ssh</code> o cambia puerto</td>
+</tr>
+<tr>
+<td><code>Connection refused</code></td>
+<td>SSH no corre en servidor o firewall</td>
+<td>Verifica <code>systemctl status ssh</code></td>
+</tr>
+<tr>
+<td><code>channel_setup_fwd_listener_tcpip</code></td>
+<td>GatewayPorts=no en servidor para -R</td>
+<td>Contacta al profesor</td>
+</tr>
+<tr>
+<td>Túnel se cierra solo</td>
+<td>Timeout o pérdida de conexión</td>
+<td>Usa <code>-o ServerAliveInterval=60</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="b.2-comandos-de-debugging">B.2 Comandos de Debugging</h3>
+<div class="sourceCode" id="cb49"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb49-1"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modo verbose (muestra todo el proceso)</span></span>
+<span id="cb49-2"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-v</span> <span class="at">-L</span> 9090:localhost:8080 studentXX@192.168.99.50</span>
+<span id="cb49-3"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Debugging extremo</span></span>
+<span id="cb49-5"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-vvv</span> studentXX@192.168.99.50</span>
+<span id="cb49-6"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Verifica configuración SSH</span></span>
+<span id="cb49-8"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-G</span> studentXX@192.168.99.50 <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-i</span> forward</span>
+<span id="cb49-9"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Test de puerto sin SSH</span></span>
+<span id="cb49-11"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="ex">nc</span> <span class="at">-zv</span> 192.168.99.50 22</span>
+<span id="cb49-12"><a href="file:///C:/Users/Jaf/Desktop/CS50&#39;s%20Introduction%20to%20Artificial%20Intelligence%20with%20Python/05_Neural%20Networks/traffic/ejercicio.html#cb49-12" aria-hidden="true" tabindex="-1"></a><span class="ex">telnet</span> 192.168.99.50 22</span></code></pre></div>
+<h3 id="b.3-contacto-de-soporte">B.3 Contacto de Soporte</h3>
+<p>Si encuentras un error no listado:</p>
+<ol type="1">
+<li>Ejecuta <code>./ssh_lab.sh check</code> y guarda la salida</li>
+<li>Ejecuta <code>ps aux | grep ssh</code> y guarda la salida</li>
+<li>Ejecuta <code>ss -tlnp | grep -E '909|3000'</code> y guarda la
+salida</li>
+<li>Envía estas 3 salidas al profesor</li>
+</ol>
+<hr>
+<h2 id="evaluación-final">Evaluación Final</h2>
+<h3 id="criterios-de-aprobación">Criterios de Aprobación</h3>
+<ul>
+<li>✅ Completa al menos 5 de 7 prácticas</li>
+<li>✅ Responde correctamente el 70% de las preguntas de reflexión</li>
+<li>✅ Demuestra funcionamiento de los 3 tipos de túneles</li>
+<li>✅ Entrega informe con capturas de pantalla</li>
+</ul>
+</body></html>
